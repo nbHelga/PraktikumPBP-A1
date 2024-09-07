@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Belajar Javascript</title>
+</head>
+<body>
+	<p>Klik button "Create New Element" untuk membuat elemen BUTTON baru</p>
+	<button onclick="createNewElement()">Create New Element</button>
+	
+	<ul id="myList">
+		<li>HTML</li>
+		<li>CSS</li>
+		<li>Javascript</li>
+	</ul>
+	
+	<p>Klik button "Remove Child Element" untuk menghapus child element list</p>
+	<button onclick="removeChildElement()">Remove Child Element</button>
+	
+	<script>
+	function createNewElement() {
+		var btn = document.createElement("BUTTON");
+		var t = document.createTextNode("CLICK ME");
+		btn.appendChild(t);
+		document.body.appendChild(btn);
+	}
+	function removeChildElement() {
+		var list = document.getElementById("myList");
+		<!-- list.removeChild(list.childNodes[1]); --> //mengembalikan semua node anak trmsk node teks spt spasi putih, baris baru
+        //untuk hapus langsung klik 1x
+        if (list.children.length > 0) { // if ada setidaknya satu elemen yang bisa dihapus
+            list.removeChild(list.children[0]); //pakai children untuk mengabaikan node teks dan hny mengembalikan elemen2 anak yg dipilih
+        }
+	}
+	</script>
+</body>
+</htm1>

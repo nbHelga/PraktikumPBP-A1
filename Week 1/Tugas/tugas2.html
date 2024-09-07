@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Form Tambah Data Produk</title>
+    <script>
+        function validateForm() {
+            var np = document.forms["formLogin"]["fProductName"];
+            var d = document.forms["formLogin"]["fDescription"];
+            var k = document.forms["formLogin"]["fKategori"];
+            var sk = document.forms["formLogin"]["fSubKategori"];
+            var hs = document.forms["formLogin"]["fHargaSatuan"];
+            var g = document.forms["formLogin"]["fGrosir"];
+            var hg = document.forms["formLogin"]["fHargaGrosir"];
+            var jk = document.querySelectorAll(".fJasaKirim");
+            var c = document.forms["formLogin"]["fCaptcha"];
+            var valid = true;
+
+            // Reset pesan kesalahan setiap kali fungsi dipanggil
+            document.getElementById("errProductName").innerHTML = "";
+            document.getElementById("errDescription").innerHTML = "";
+            document.getElementById("errKategori").innerHTML = "";
+            document.getElementById("errSubKategori").innerHTML = "";
+            document.getElementById("errHargaSatuan").innerHTML = "";
+            document.getElementById("errGrosir").innerHTML = "";
+            document.getElementById("errHargaGrosir").innerHTML = "";
+            document.getElementById("errJasaKirim").innerHTML = "";
+            document.getElementById("errCaptcha").innerHTML = "";
+
+            if (!np.checkValidity()){
+                document.getElementById("errProductName").innerHTML = np.validationMessage;
+                valid = false;
+            }
+            if (!d.checkValidity()){
+                document.getElementById("errDescription").innerHTML = d.validationMessage;
+                valid = false;
+            }
+            if (!k.checkValidity()){
+                document.getElementById("errKategori").innerHTML = k.validationMessage;
+                valid = false;
+            }
+            if (!sk.checkValidity()){
+                document.getElementById("errSubKategori").innerHTML = sk.validationMessage;
+                valid = false;
+            }
+            if (!hs.checkValidity()){
+                document.getElementById("errHargaSatuan").innerHTML = hs.validationMessage;
+                valid = false;
+            }
+            if (!g.checkValidity()){
+                document.getElementById("errGrosir").innerHTML = g.validationMessage;
+                valid = false;
+            }
+            if (g.value === "Ya" && !hg.checkValidity()){
+                document.getElementById("errHargaGrosir").innerHTML = hg.validationMessage;
+                valid = false;
+            }
+
+            if (!validateJasaKirim()) {
+                valid = false;  // Jika validasi jasa kirim salah
+            }
+
+            if (!validasiCaptcha()){
+                valid = false; // Jika validasi captcha salah
+            }
+
+            return valid;
+        }
+        function fsubKategori(){
+            // Buat elemen Kategori dan SubKategori
+            var Kategori = document.getElementById("fKategori").value;
+            var SubKategori = document.getElementById("fSubKategori");
+            var subkategori = [];
+            SubKategori.innerHTML = "";
+
+            // Untuk mencetak kalimat "Pilih Sub Kategori"
+            var pilihs = document.createElement("option");
+            pilihs.value = "";
+            pilihs.innerHTML = "--- Pilih Sub Kategori ---" 
+            pilihs.disabled = true;
+            pilihs.selected = true;
+            pilihs.style.textAlignLast = "center";
+            SubKategori.appendChild(pilihs);
+
+            // Kondisional Statement untuk Sub Kategori ketika memilih Kategori
+            if (Kategori == "kategori1"){
+                subkategori = ["- Baju Pria", "- Baju Wanita", "- Baju Anak"];
+            }
+            else if (Kategori == "kategori2"){
+                subkategori = ["- Mesin Cuci", "- Kulkas", "- AC"];
+            } 
+            else if (Kategori == "kategori3"){
+                subkategori = ["- Kertas", "- Map", "- Pulpen"];
+            }
+
+            // Untuk me-reset opsi Sub Kategori ketika memilih Kategori
+            if (subkategori.length > 0) {
+                for (var i = 0; i < subkategori.length; i++){
+                    var subk = document.createElement("option");
+                    subk.value = subkategori[i];
+                    subk.innerHTML = subkategori[i];
+                    SubKategori.appendChild(subk);
+                }
+            }
+            else {
+                var subk = document.createElement("option");
+                subk.value = "";
+                subk.innerHTML = "--- Pilih Sub Kategori ---";
+                subk.disabled = true;
+                SubKategori.appendChild(subk);
+            }
+        }
+
+        function isGrosir(){
+            var opsi = document.querySelector('input[name="fGrosir"]:checked').value;
+            var fHargaGrosir = document.getElementById('fHargaGrosir');
+
+            if (opsi === "Ya"){
+                fHargaGrosir.disabled = false;
+            }
+            else {
+                fHargaGrosir.disabled = true;
+                fHargaGrosir.value = "";
+            }
+        }
+
+        // Untuk random CAPTCHA
+        function funcCaptcha() {
+            let char = ''; //let itu string
+            for (let i = 0; i < 6; i++) {
+                let random = Math.random() < 0.5 
+                    ? String.fromCharCode(Math.floor(Math.random() * 26) + 65) // A-Z
+                    : String.fromCharCode(Math.floor(Math.random() * 26) + 97); // a-z
+                char += random;
+            }
+            document.getElementById('kodeCaptcha').innerText = char;
+        }
+        
+        // Fungsi untuk validasi jasa kirim
+        function validasiJasaKirim() {
+            var jk = document.querySelectorAll(".fJasaKirim");  // Ambil semua checkbox
+            var hitungcheckbox = 0;
+            
+            jk.forEach(function (checkbox) {
+                if (checkbox.checked) {
+                    hitungcheckbox++;
+                }
+            });
+
+            // Cek apakah checkbox yang dicentang kurang dari 3
+            if (hitungcheckbox < 3) {
+                document.getElementById("errJasaKirim").innerHTML = "Minimal pilih 3 jasa kirim!";
+                return false;  // Kembalikan false jika validasi gagal
+            } else {
+                document.getElementById("errJasaKirim").innerHTML = "";  // Bersihkan pesan kesalahan
+                return true;  // Kembalikan true jika validasi berhasil
+            }
+        }
+
+        // Validasi Captcha
+        function validasiCaptcha() {
+            let inp = document.getElementById('inp').value;
+            let kodeCaptcha = document.getElementById('kodeCaptcha').innerText;
+
+            if (inp === kodeCaptcha) {
+                alert("CAPTCHA verified successfully!");
+                return true;
+            } else {
+                alert("Invalid CAPTCHA, please try again.");
+                return false;
+            }
+        }
+
+        // Auto-generate Captcha ketika reload
+        window.onload = function() {
+            funcCaptcha();
+        };
+
+        function resetForm() {
+            document.getElementById('captchaInput').value = ''; // Kosongkan input captcha
+            funcCaptcha(); // Generate captcha baru
+        }
+    </script>
+    <style>
+        #errJasaKirim {
+            color: red;
+            font-size: 12px;
+            display: block; /* Spy pesan kesalahan ditampilkan sebagai block dan berada di bawah pilihan */
+            margin-top: 5px; /* Memberikan jarak antara pilihan dan pesan kesalahan */
+        }  
+    </style>
+</head>
+<body>
+    <h2>Form Tambah Data Produk</h2>
+    <form name="formLogin" action="process.php" method="post" onsubmit="return validateForm()">
+        <!-- Label untuk Nama Produk -->
+        <label for = "fProductName" style="display : inline-flex; align-items : center; width : 120px; margin-right : 10px;"> Nama Produk:</label> 
+        <input type="text" name="fProductName" required="required" minlength="5" maxlength="30" style = "width : 400px; padding : 10px; box-sizing : border-box; margin-bottom: 10px;"/>
+        <span id="errProductName"></span><br /> <!-- br itu spt \n jdi tujuanny utk memulai baris baru -->
+        <!-- fungsi utama span utk memanipulasi/menerapkan suatu gaya pd bagian kecil konten. Dalam kasus ini ia memanggil pesan error saat pengguna melakukan kesalahan dlm memasukkan inp teks -->
+
+        <!-- Label untuk Deskripsi -->
+        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+            <label for="fDescription" style="width: 120px; margin-right: 15px;">Deskripsi:</label>
+            <textarea name="fDescription" required="required" minlength="5" maxlength="100" style="height: 100px; width: 400px;"></textarea>
+        </div>
+        <span id="errDescription"></span><br />
+
+        <!-- Label untuk Kategori -->
+        <label for = "fKategori" style="display : inline-flex; align-items : center; width : 120px; margin-right : 10px;"> Kategori:</label> 
+        <select id="fKategori" name="fKategori" required="required" style = "width : 400px; padding : 10px; box-sizing : border-box; margin-bottom: 10px;" onchange="fsubKategori()">
+            <option value="" disabled selected style = "text-align-last: center;">--- Pilih Kategori ---</option>
+            <option value = "kategori1">Baju</option>
+            <option value = "kategori2">Elektronik</option>
+            <option value = "kategori3">Alat Tulis</option>
+        </select>
+        <span id="errKategori"></span><br />
+
+        <!-- Label untuk Sub Kategori -->
+        <label for = "fSubKategori" style="display : inline-flex; align-items : center; width : 120px; margin-right : 10px;"> Sub Kategori:</label> 
+        <select id="fSubKategori" name="fSubKategori" required="required" style = "width : 400px; padding : 10px; box-sizing : border-box; margin-bottom: 10px;">
+            <option value="" disabled selected style = "text-align-last: center;">--- Pilih Sub Kategori ---</option>
+        </select>
+        <span id="errSubKategori"></span><br />
+
+        <!-- Label untuk Harga Satuan -->
+        <label for = "fHargaSatuan" style="display : inline-flex; align-items : center; width : 120px; margin-right : 10px;"> Harga Satuan:</label> 
+        <input type="number" name="fHargaSatuan" required="required" minlength="5" maxlength="30" style = "width : 200px; padding : 10px; box-sizing : border-box; margin-bottom: 10px;"/>
+        <span id="errHargaSatuan"></span><br />
+
+        <!-- Label untuk Grosir -->
+        <label for = "fGrosir" style="display :inline-flex; align-items: center;  width : 120px; margin-right : 10px;"> Grosir:</label> 
+        <input type="radio" id="fGrosir" name="fGrosir" value="Ya" required="required" onchange="isGrosir()">
+        <label for="fGrosir"style="display :inline-flex; align-items: center;  width : 100px; margin-right : 10px;">Ya</label>
+
+        <input type="radio" id="Tidak" name="fGrosir" value="Tidak" required="required"  onchange="isGrosir()">
+        <label for="fGrosir" style="display :inline-flex; align-items: center;  width : 100px; margin-right : 10px;" >Tidak</label><br>
+        <span id="errGrosir"></span><br /> 
+
+        <!-- Label untuk Harga Grosir -->
+        <label for = "fHargaGrosir" style="display : inline-flex; align-items : center; width : 120px; margin-right : 10px;"> Harga Grosir:</label> 
+        <input type="number" id="fHargaGrosir" name="fHargaGrosir" disabled required="required" />
+        <span id="errHargaGrosir"></span><br />
+
+        <!-- Label untuk Jasa Kirim -->
+        <label for="fJasaKirim" style="display: inline-flex; align-items: center; width: 120px; margin-right: 10px; margin-top: 20px;">Jasa Kirim:</label>
+        <input type="checkbox" class="fJasaKirim" name="fJasaKirim[]" id="jne" /> JNE
+        <input type="checkbox" class="fJasaKirim" name="fJasaKirim[]" id="tiki" /> TIKI
+        <input type="checkbox" class="fJasaKirim" name="fJasaKirim[]" id="sicepat" /> SiCepat
+        <input type="checkbox" class="fJasaKirim" name="fJasaKirim[]" id="ninjaExpress" /> Ninja Express
+        <input type="checkbox" class="fJasaKirim" name="fJasaKirim[]" id="wahana" /> Wahana
+        <span id="errJasaKirim"></span><br />
+
+        <!-- Label untuk Captcha -->
+        <label for="kodeCaptcha" style="display: inline-block; width: 100px; margin-right: 30px;">Captcha:</label>
+        <span id="kodeCaptcha" >abc123</span>
+        <input type="text" id="captchaInput" placeholder="Masukkan Captcha" required style="margin-left: 10px;" />
+        <br/><br/>
+        
+        <!-- Label untuk submit -->
+        <input type="submit" value="Submit" >
+        <input type="reset" value="Reset" onclick="resetForm()">
+    </form>
+</body>
+</html>
